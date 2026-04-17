@@ -1,3 +1,4 @@
+// JobEditForm.cs
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -24,10 +25,16 @@ namespace SimpleScheduler
             dtpStartTime.Value = CurrentJob.StartTime;
             chkUseEndTime.Checked = CurrentJob.EndTime.HasValue;
             dtpEndTime.Value = CurrentJob.EndTime ?? DateTime.Now.AddDays(1);
+            
+            // 데이터 바인딩
+            cmbRunType.SelectedIndex = (int)CurrentJob.RunType;
             numInterval.Value = CurrentJob.IntervalMinutes;
+            dtpRunTime.Value = CurrentJob.DailyRunTime;
+            cmbWeeklyDay.SelectedIndex = (int)CurrentJob.WeeklyRunDay; // 0: 일요일 ~ 6: 토요일
+            numMonthlyDay.Value = CurrentJob.MonthlyRunDay;
 
-            // 폼 로드 시, 체크박스 상태에 따라 종료 시간 컨트롤의 표시 여부/활성화 상태를 설정
             ToggleEndTimePicker(chkUseEndTime.Checked);
+            UpdateScheduleUI();
         }
 
         private void btnBrowse_Click(object sender, EventArgs e)
@@ -47,22 +54,43 @@ namespace SimpleScheduler
             ToggleEndTimePicker(chkUseEndTime.Checked);
         }
 
-        // ▼▼▼ [추가] 종료 시간 컨트롤의 상태를 변경하는 헬퍼 메서드 ▼▼▼
+        private void cmbRunType_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateScheduleUI();
+        }
+
         private void ToggleEndTimePicker(bool isEnabled)
         {
             dtpEndTime.Enabled = isEnabled;
             if (isEnabled)
             {
-                // 활성화되면 날짜/시간 포맷을 다시 보여줌
                 dtpEndTime.Format = DateTimePickerFormat.Custom;
                 dtpEndTime.CustomFormat = "yyyy-MM-dd HH:mm:ss";
             }
             else
             {
-                // 비활성화되면 포맷을 공백으로 변경하여 값을 숨김
                 dtpEndTime.Format = DateTimePickerFormat.Custom;
                 dtpEndTime.CustomFormat = " ";
             }
+        }
+
+        private void UpdateScheduleUI()
+        {
+            var type = (ScheduleType)cmbRunType.SelectedIndex;
+
+            // 간격
+            numInterval.Visible = type == ScheduleType.Interval;
+            label6.Visible = type == ScheduleType.Interval;
+
+            // 매일, 매주, 매월의 지정 시간
+            dtpRunTime.Visible = type != ScheduleType.Interval;
+
+            // 매주 (요일 선택)
+            cmbWeeklyDay.Visible = type == ScheduleType.Weekly;
+
+            // 매월 (일자 선택)
+            numMonthlyDay.Visible = type == ScheduleType.Monthly;
+            lblMonthlyDay.Visible = type == ScheduleType.Monthly;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -84,7 +112,12 @@ namespace SimpleScheduler
             CurrentJob.Arguments = txtArguments.Text;
             CurrentJob.StartTime = dtpStartTime.Value;
             CurrentJob.EndTime = chkUseEndTime.Checked ? (DateTime?)dtpEndTime.Value : null;
+            
+            CurrentJob.RunType = (ScheduleType)cmbRunType.SelectedIndex;
             CurrentJob.IntervalMinutes = (int)numInterval.Value;
+            CurrentJob.DailyRunTime = dtpRunTime.Value;
+            CurrentJob.WeeklyRunDay = (DayOfWeek)cmbWeeklyDay.SelectedIndex;
+            CurrentJob.MonthlyRunDay = (int)numMonthlyDay.Value;
 
             DialogResult = DialogResult.OK;
             Close();
