@@ -1,7 +1,8 @@
+// MainForm.cs
 using System;
-using System.Drawing; // Icon 클래스를 사용하기 위해 추가
+using System.Drawing;
 using System.Linq;
-using System.Reflection; // Assembly 클래스를 사용하기 위해 추가
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace SimpleScheduler
@@ -19,20 +20,15 @@ namespace SimpleScheduler
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            // ▼▼▼ [수정] 코드로 아이콘을 로드하는 메서드 호출 ▼▼▼
             LoadIconFromResources();
-
             RefreshJobList();
             UpdateUIState();
         }
 
-        // ▼▼▼ [추가] 포함된 리소스에서 아이콘을 안전하게 로드하는 메서드 ▼▼▼
         private void LoadIconFromResources()
         {
             try
             {
-                // 현재 실행 중인 프로그램(Assembly)에서 리소스를 찾습니다.
-                // 기본 네임스페이스.폴더명.파일명 형식으로 리소스 이름을 지정합니다.
                 var assembly = Assembly.GetExecutingAssembly();
                 using (var stream = assembly.GetManifestResourceStream("SimpleScheduler.Resources.SimpleScheduler.ico"))
                 {
@@ -46,7 +42,6 @@ namespace SimpleScheduler
             }
             catch (Exception ex)
             {
-                // 아이콘 로드 실패 시 로그를 남길 수 있습니다.
                 Console.WriteLine("아이콘 로드 실패: " + ex.Message);
             }
         }
@@ -92,6 +87,10 @@ namespace SimpleScheduler
             btnAdd.Enabled = !isSchedulerRunning;
             btnEdit.Enabled = !isSchedulerRunning && lvwJobs.SelectedItems.Count > 0;
             btnDelete.Enabled = !isSchedulerRunning && lvwJobs.SelectedItems.Count > 0;
+            
+            // 불러오기는 스케줄러가 정지 상태일 때만 가능하게 제한
+            if(this.Controls.ContainsKey("btnImport")) this.Controls["btnImport"].Enabled = !isSchedulerRunning;
+
             lvwJobs.Enabled = !isSchedulerRunning;
 
             bool anyJobChecked = lvwJobs.Items.Cast<ListViewItem>().Any(item => item.Checked);
@@ -152,6 +151,54 @@ namespace SimpleScheduler
                     _schedulerService.DeleteJob(selectedJob.Id);
                     RefreshJobList();
                     UpdateUIState();
+                }
+            }
+        }
+
+        // ▼ [추가] 작업 목록 내보내기 이벤트
+        private void btnExport_Click(object sender, EventArgs e)
+        {
+            using (var sfd = new SaveFileDialog())
+            {
+                sfd.Filter = "XML 파일 (*.xml)|*.xml|모든 파일 (*.*)|*.*";
+                sfd.FileName = $"SchedulerJobs_{DateTime.Now:yyyyMMdd}.xml";
+                if (sfd.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        _schedulerService.ExportJobs(sfd.FileName);
+                        MessageBox.Show("작업 목록이 성공적으로 내보내기 되었습니다.", "내보내기", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"내보내기 중 오류가 발생했습니다.\n{ex.Message}", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        // ▼ [추가] 작업 목록 불러오기 이벤트
+        private void btnImport_Click(object sender, EventArgs e)
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "XML 파일 (*.xml)|*.xml|모든 파일 (*.*)|*.*";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    if (MessageBox.Show("기존 작업 목록이 모두 삭제되고 선택한 파일의 내용으로 덮어씌워집니다. 계속하시겠습니까?", "불러오기 확인", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.Yes)
+                    {
+                        try
+                        {
+                            _schedulerService.ImportJobs(ofd.FileName);
+                            RefreshJobList();
+                            UpdateUIState();
+                            MessageBox.Show("작업 목록을 성공적으로 불러왔습니다.", "불러오기", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"불러오기 중 오류가 발생했습니다.\n{ex.Message}", "오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
                 }
             }
         }
