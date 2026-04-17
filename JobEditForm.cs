@@ -25,7 +25,7 @@ namespace SimpleScheduler
             dtpStartTime.Value = CurrentJob.StartTime;
             chkUseEndTime.Checked = CurrentJob.EndTime.HasValue;
             dtpEndTime.Value = CurrentJob.EndTime ?? DateTime.Now.AddDays(1);
-            
+
             // 데이터 바인딩
             cmbRunType.SelectedIndex = (int)CurrentJob.RunType;
             numInterval.Value = CurrentJob.IntervalMinutes;
@@ -112,7 +112,7 @@ namespace SimpleScheduler
             CurrentJob.Arguments = txtArguments.Text;
             CurrentJob.StartTime = dtpStartTime.Value;
             CurrentJob.EndTime = chkUseEndTime.Checked ? (DateTime?)dtpEndTime.Value : null;
-            
+
             CurrentJob.RunType = (ScheduleType)cmbRunType.SelectedIndex;
             CurrentJob.IntervalMinutes = (int)numInterval.Value;
             CurrentJob.DailyRunTime = dtpRunTime.Value;
