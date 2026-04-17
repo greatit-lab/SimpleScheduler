@@ -87,9 +87,9 @@ namespace SimpleScheduler
             btnAdd.Enabled = !isSchedulerRunning;
             btnEdit.Enabled = !isSchedulerRunning && lvwJobs.SelectedItems.Count > 0;
             btnDelete.Enabled = !isSchedulerRunning && lvwJobs.SelectedItems.Count > 0;
-            
+
             // 불러오기는 스케줄러가 정지 상태일 때만 가능하게 제한
-            if(this.Controls.ContainsKey("btnImport")) this.Controls["btnImport"].Enabled = !isSchedulerRunning;
+            if (this.Controls.ContainsKey("btnImport")) this.Controls["btnImport"].Enabled = !isSchedulerRunning;
 
             lvwJobs.Enabled = !isSchedulerRunning;
 
