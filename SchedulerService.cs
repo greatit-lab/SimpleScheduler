@@ -58,7 +58,7 @@ namespace SimpleScheduler
                         continue;
                     }
                     ExecuteJob(job);
-                    
+
                     job.NextRunTime = GetNextRunTime(job, DateTime.Now);
                     Log($"작업 '{job.Name}'의 다음 실행 시간: {job.NextRunTime:yyyy-MM-dd HH:mm:ss}");
                 }
@@ -151,7 +151,7 @@ namespace SimpleScheduler
             {
                 _jobs.Remove(existingJob);
             }
-            
+
             job.NextRunTime = GetNextRunTime(job, DateTime.Now, isImmediateUpdate: true);
             _jobs.Add(job);
             SaveJobs();
