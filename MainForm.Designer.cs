@@ -25,7 +25,7 @@ namespace SimpleScheduler
             this.btnAdd = new System.Windows.Forms.Button();
             this.btnEdit = new System.Windows.Forms.Button();
             this.btnDelete = new System.Windows.Forms.Button();
-            
+
             // ▼ [추가] 불러오기, 내보내기 버튼 선언
             this.btnImport = new System.Windows.Forms.Button();
             this.btnExport = new System.Windows.Forms.Button();
@@ -121,7 +121,7 @@ namespace SimpleScheduler
             this.btnDelete.Text = "삭제";
             this.btnDelete.UseVisualStyleBackColor = true;
             this.btnDelete.Click += new System.EventHandler(this.btnDelete_Click);
-            
+
             // ▼ [추가] btnImport (목록 불러오기) 설정
             // 
             this.btnImport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -132,7 +132,7 @@ namespace SimpleScheduler
             this.btnImport.Text = "목록 불러오기";
             this.btnImport.UseVisualStyleBackColor = true;
             this.btnImport.Click += new System.EventHandler(this.btnImport_Click);
-            
+
             // ▼ [추가] btnExport (목록 내보내기) 설정
             // 
             this.btnExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -251,7 +251,7 @@ namespace SimpleScheduler
             this.Controls.Add(this.btnExitApp);
             this.Controls.Add(this.btnStopScheduler);
             this.Controls.Add(this.btnStartScheduler);
-            
+
             // ▼ [추가] 폼 컨트롤 컬렉션에 등록
             this.Controls.Add(this.btnImport);
             this.Controls.Add(this.btnExport);
@@ -279,7 +279,7 @@ namespace SimpleScheduler
         private System.Windows.Forms.Button btnAdd;
         private System.Windows.Forms.Button btnEdit;
         private System.Windows.Forms.Button btnDelete;
-        
+
         // ▼ [추가] 불러오기, 내보내기 변수 선언
         private System.Windows.Forms.Button btnImport;
         private System.Windows.Forms.Button btnExport;
